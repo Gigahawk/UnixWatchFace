@@ -1,0 +1,43 @@
+{
+    "author": "Gigahawk",
+    "dependencies": {},
+    "keywords": [],
+    "name": "unixwatchface",
+    "pebble": {
+        "capabilities": [
+            "location"
+        ],
+        "displayName": "UnixWatchface",
+        "enableMultiJS": false,
+        "messageKeys": {
+            "KEY_CONDITIONS": 1,
+            "KEY_TEMPERATURE": 0,
+            "PERSIST_KEY": 2
+        },
+        "projectType": "native",
+        "resources": {
+            "media": [
+                {
+                    "file": "fonts/monaco.ttf",
+                    "name": "FONT_MONACO_10",
+                    "type": "font"
+                },
+                {
+                    "file": "fonts/monaco.ttf",
+                    "name": "FONT_MONACO_16",
+                    "type": "font"
+                }
+            ]
+        },
+        "sdkVersion": "3",
+        "targetPlatforms": [
+            "aplite",
+            "basalt"
+        ],
+        "uuid": "17ccebf5-cf30-4d1e-8a66-fc57a387a738",
+        "watchapp": {
+            "watchface": true
+        }
+    },
+    "version": "1.0.0"
+}
