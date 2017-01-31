@@ -2,7 +2,7 @@
 #define KEY_TEMPERATURE 0
 #define KEY_CONDITIONS 1
 #define PERSIST_KEY 2
-#define VIBRATE_CYCLE 	10
+#define VIBRATE_CYCLE 10
 
 static Window *s_main_window;
 
@@ -23,10 +23,13 @@ static void bt_handler(bool connected) {
   if (connected) {
     text_layer_set_text(s_bluetooth_layer, "19485e21    device");
   } else {
-	for(int i = 0; i < VIBRATE_CYCLE; i++){
-		vibes_short_pulse();
-	}
     text_layer_set_text(s_bluetooth_layer, " ");
+    for(int i = 0; i < VIBRATE_CYCLE; i++){
+      vibes_short_pulse();
+      psleep(100);
+      vibes_cancel();
+      psleep(100);
+    }
   }
 }
 
