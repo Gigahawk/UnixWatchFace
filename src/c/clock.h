@@ -1,5 +1,5 @@
-#ifndef TIME_H
-#define TIME_H
+#ifndef CLOCK_H
+#define CLOCK_H
 
 #include <pebble.h>
 
