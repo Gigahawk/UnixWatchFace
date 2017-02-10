@@ -17,4 +17,5 @@ TODO:
   - Add configuration
     - Option to invert screen colors
     - Option to revert to old battery indicator (only Pebble battery, may reduce battery drain)
+    - Option to pick weather API
   - Minor refactoring
