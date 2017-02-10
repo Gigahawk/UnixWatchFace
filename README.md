@@ -7,7 +7,7 @@ Features:
   - Use 24h time to have the time update every minute, 12 to update every second
  - Battery indicator
   - Bat0: Pebble battery
-  - Bat1: Phone battery (Uses the [Battery Status API](https://developer.mozilla.org/en/docs/Web/API/Battery_Status_API)
+  - Bat1: Phone battery (Uses the [Battery Status API](https://developer.mozilla.org/en/docs/Web/API/Battery_Status_API))
  - Weather
   - Uses Yahoo's weather API
  - Bluetooth connection indicator
