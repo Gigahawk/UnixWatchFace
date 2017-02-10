@@ -19,3 +19,6 @@ TODO:
     - Option to revert to old battery indicator (only Pebble battery, may reduce battery drain)
     - Option to pick weather API
   - Minor refactoring
+
+Credit:
+ - [TrekVolle](https://github.com/aHcVolle/TrekVolle) was the inspiration for the recent update's organization style as well as the Battery Status API implementation.
