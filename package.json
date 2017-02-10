@@ -8,23 +8,35 @@
             "location"
         ],
         "displayName": "UnixWatchface",
-        "enableMultiJS": false,
-        "messageKeys": {
-            "KEY_CONDITIONS": 1,
-            "KEY_TEMPERATURE": 0,
-            "PERSIST_KEY": 2
-        },
+        "enableMultiJS": true,
+        "messageKeys": [
+            "WEATHER_TEMPERATURE",
+            "WEATHER_CONDITIONS",
+            "PHONE_BATTERY",
+            "PHONE_CHARGING",
+            "READY",
+            "WEATHER_STORAGE",
+            "END"
+        ],
         "projectType": "native",
         "resources": {
             "media": [
                 {
                     "file": "fonts/monaco.ttf",
+                    "name": "FONT_MONACO_12",
+                    "targetPlatforms": null,
+                    "type": "font"
+                },
+                {
+                    "file": "fonts/monaco.ttf",
                     "name": "FONT_MONACO_10",
+                    "targetPlatforms": null,
                     "type": "font"
                 },
                 {
                     "file": "fonts/monaco.ttf",
                     "name": "FONT_MONACO_16",
+                    "targetPlatforms": null,
                     "type": "font"
                 }
             ]
