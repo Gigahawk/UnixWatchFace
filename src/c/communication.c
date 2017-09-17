@@ -1,44 +1,145 @@
 #include "communication.h"
 #include "weather.h"
 #include "battery.h"
-
-//#define DEBUG_COMMUNICATION
+#include "settings.h"
 
 DictionaryIterator *message;
 
+#ifdef DEBUG_COMMUNICATION
+const char* messageKeyToString(uint32_t key){
+  if(key == MESSAGE_KEY_END)
+    return "END";
+  if(key == MESSAGE_KEY_TIME_STORAGE)
+    return "TIME_STORAGE";
+  if(key == MESSAGE_KEY_WEATHER_STORAGE)
+    return "WEATHER_STORAGE";
+  if(key == MESSAGE_KEY_READY)
+    return "READY";
+  if(key == MESSAGE_KEY_weather_units)
+    return "weather_units";
+  if(key == MESSAGE_KEY_PHONE_BATTERY)
+    return "PHONE_BATTERY";
+  if(key == MESSAGE_KEY_PHONE_CHARGING)
+    return "PHONE_CHARGING";
+  if(key == MESSAGE_KEY_weather_interval)
+    return "weather_interval";
+  if(key == MESSAGE_KEY_weather_provider)
+    return "weather_provider";
+  if(key == MESSAGE_KEY_WEATHER_CONDITIONS)
+    return "WEATHER_CONDITIONS";
+  if(key == MESSAGE_KEY_WEATHER_TEMPERATURE)
+    return "WEATHER_TEMPERATURE";
+  if(key == MESSAGE_KEY_weather_units)
+    return "weather_units";
+  if(key == MESSAGE_KEY_weather_fail_indicator)
+    return "weather_fail_indicator";
+  
+  return "UNKNOWN";
+}
+#endif
+
 static void inbox_received_callback(DictionaryIterator *iterator, void *context)
 {
+  // Get settings from dictionary
+  Tuple *weather_provider_t = dict_find(iterator, MESSAGE_KEY_weather_provider);
+  Tuple *weather_units_t = dict_find(iterator, MESSAGE_KEY_weather_units);
+  Tuple *weather_interval_t = dict_find(iterator, MESSAGE_KEY_weather_interval);
+  Tuple *weather_fail_indicator_t = dict_find(iterator, MESSAGE_KEY_weather_fail_indicator);
+  Tuple *quiet_hours_t = dict_find(iterator, MESSAGE_KEY_quiet_hours);
+  Tuple *quiet_hours_start_t = dict_find(iterator, MESSAGE_KEY_quiet_hours_start);
+  Tuple *quiet_hours_end_t = dict_find(iterator, MESSAGE_KEY_quiet_hours_end);
+  Tuple *quiet_hours_disabled_features_t = dict_find(iterator, MESSAGE_KEY_quiet_hours_disabled_features);
+
   // Get data from dictionary
-  Tuple *weather_temperature = dict_find(iterator, MESSAGE_KEY_WEATHER_TEMPERATURE);
-  Tuple *weather_conditions = dict_find(iterator, MESSAGE_KEY_WEATHER_CONDITIONS);
+  Tuple *weather_temperature_t = dict_find(iterator, MESSAGE_KEY_WEATHER_TEMPERATURE);
+  Tuple *weather_conditions_t = dict_find(iterator, MESSAGE_KEY_WEATHER_CONDITIONS);
   
-  Tuple *battery_level = dict_find(iterator, MESSAGE_KEY_PHONE_BATTERY);
-  Tuple *battery_charging = dict_find(iterator, MESSAGE_KEY_PHONE_CHARGING);
+  Tuple *battery_level_t = dict_find(iterator, MESSAGE_KEY_PHONE_BATTERY);
+  Tuple *battery_charging_t = dict_find(iterator, MESSAGE_KEY_PHONE_CHARGING);
   
-  Tuple *com_ready = dict_find(iterator, MESSAGE_KEY_READY);
+  Tuple *com_ready_t = dict_find(iterator, MESSAGE_KEY_READY);
   
-  if (weather_temperature && weather_conditions) {
+  if (weather_provider_t && weather_units_t) {
+#ifdef DEBUG_COMMUNICATION
+    printf("communication_c: Weather Provider Setting recieved: %s", weather_provider_t->value->cstring);
+    printf("communication_c: Weather Units Setting recieved: %s", weather_units_t->value->cstring);
+#endif
+    setString(o_weather_provider, weather_provider_t->value->cstring);
+    setString(o_weather_unit, weather_units_t->value->cstring);
+    setNum(o_weather_unit, weather_units_t->value->cstring[0]=='s'? 'C':'F');
+    // Send data back to phone to update pebblekitJS
+    update_weather_settings(weather_provider_t->value->cstring, weather_units_t->value->cstring);
+    weather_request();
+  }
+  
+  if (weather_interval_t){
+    int weather_interval = (int)weather_interval_t->value->int32;
+#ifdef DEBUG_COMMUNICATION
+    printf("communication_c: Weather interval setting recieved: %d minutes", weather_interval);
+#endif
+    setNum(o_weather_update_interval, weather_interval);
+  }
+  
+  if (weather_fail_indicator_t){
+    bool enable = weather_fail_indicator_t->value->int32;
+#ifdef DEBUG_COMMUNICATION
+    printf("communication_c: Weather Fail Indicator setting recieved: %d", enable);
+#endif
+    setNum(o_weather_update_fail_indicator, enable);
+  }
+  
+  if (quiet_hours_t){
+    bool enable = quiet_hours_t->value->int32;
+#ifdef DEBUG_COMMUNICATION
+    printf("communication_c: Quiet Hours setting recieved: %d", enable);
+#endif
+    setNum(o_quiet_hours, enable);
+  }
+  
+  if (quiet_hours_start_t && quiet_hours_end_t){
+#ifdef DEBUG_COMMUNICATION
+    printf("communication_c: Quiet hours start recieved: %s", quiet_hours_start_t->value->cstring);
+    printf("communication_c: Quiet hours end recieved: %s", quiet_hours_end_t->value->cstring);
+#endif
+    setTime(o_quiet_hours_start, quiet_hours_start_t->value->cstring);
+    setTime(o_quiet_hours_end, quiet_hours_end_t->value->cstring);
+  }
+  
+  if (quiet_hours_disabled_features_t){
+    bool settings[QUIET_HOURS_NUM_SETTINGS];
+    
+    for(int i = 0; i < QUIET_HOURS_NUM_SETTINGS; i++){
+      quiet_hours_disabled_features_t = dict_find(iterator, MESSAGE_KEY_quiet_hours_disabled_features + i);
+      settings[i] = (bool)quiet_hours_disabled_features_t->value->uint8;
+    }
+    
+#ifdef DEBUG_COMMUNICATION
+    printf("communication_c: Quiet Hours disabled features recieved: [0]%d, [1]%d, [2]%d, [3]%d",(int)settings[0],(int)settings[1],(int)settings[2],(int)settings[3]);
+#endif
+  }
+  
+  if (weather_temperature_t && weather_conditions_t) {
 #ifdef DEBUG_COMMUNICATION
     printf("communication_c: Weather info recieved");
 #endif
     
-    weather_handle(weather_temperature, weather_conditions);
+    weather_handle(weather_temperature_t, weather_conditions_t);
   }
   
-  if (battery_level) {
+  if (battery_level_t) {
 #ifdef DEBUG_COMMUNICATION
     printf("communication_c: Battery info recieved");
 #endif
-    battery_handle_phone((int)battery_level->value->int32,(bool)battery_charging->value->int32);
+    battery_handle_phone((int)battery_level_t->value->int32,(bool)battery_charging_t->value->int32);
   }
   
-  if (com_ready) {
+  if (com_ready_t) {
 #ifdef DEBUG_COMMUNICATION
     printf("communication_c: Communications are ready");
 #endif
     is_com_active = true;
     
-    //Request weather when communication is established
+    //Request weather when communication is established (also push messages still in queue)
     weather_request();
   }
 }
@@ -62,6 +163,8 @@ static void outbox_failed_callback(DictionaryIterator *iterator, AppMessageResul
 #ifdef DEBUG_COMMUNICATION
   printf("communication_c: Error: Could not send AppMessage - %d",reason);
 #endif
+  app_message_outbox_begin(&iterator);
+  app_message_outbox_send();
 }
 
 
@@ -77,7 +180,13 @@ void communication_send(uint32_t key)
 #ifdef DEBUG_COMMUNICATION
       printf("communication_c: Error: No message to send");
 #endif
-    } else {
+    } else { 
+      if(!is_com_active){
+#ifdef DEBUG_COMMUNICATION
+        printf("communication_c: Error: Coms are not active yet");
+#endif
+        return;
+      }
       dict_write_uint32(message,MESSAGE_KEY_END,1);
       app_message_outbox_send();
     }
@@ -87,7 +196,7 @@ void communication_send(uint32_t key)
   }
   
 #ifdef DEBUG_COMMUNICATION
-  printf("communication_c: Packaging key %d",(int)key);
+  printf("communication_c: Packaging key %s,id: %d",messageKeyToString(key), (int)key);
 #endif
   
   if (!is_message_building) {
@@ -100,6 +209,26 @@ void communication_send(uint32_t key)
   
   dict_write_uint32(message,key,1);
 }
+
+void update_weather_settings(const char* provider,const char* units){
+#ifdef DEBUG_COMMUNICATION
+  printf("communication_c: Updating weather provider to %s", provider);
+#endif
+  
+  if (!is_message_building) {
+#ifdef DEBUG_COMMUNICATION
+    printf("communication_c: Start of new package");
+#endif
+    is_message_building = true;
+    app_message_outbox_begin(&message);
+  }
+  
+  dict_write_cstring(message, MESSAGE_KEY_weather_provider, provider);
+  dict_write_cstring(message, MESSAGE_KEY_weather_units, units);
+
+  communication_send(MESSAGE_KEY_END);
+}
+
 
 
 

@@ -1,11 +1,14 @@
 {
     "author": "Gigahawk",
-    "dependencies": {},
+    "dependencies": {
+        "pebble-clay": "^1.0.4"
+    },
     "keywords": [],
     "name": "unixwatchface",
     "pebble": {
         "capabilities": [
-            "location"
+            "location",
+            "configurable"
         ],
         "displayName": "UnixWatchface",
         "enableMultiJS": true,
@@ -16,7 +19,18 @@
             "PHONE_CHARGING",
             "READY",
             "WEATHER_STORAGE",
-            "END"
+            "TIME_STORAGE",
+            "END",
+            "weather_provider",
+            "weather_units",
+            "weather_interval",
+            "weather_fail_indicator",
+            "quiet_hours_start",
+            "quiet_hours_end",
+            "quiet_hours_disabled_features[4]",
+            "quiet_hours",
+            "SETTINGS_STORAGE",
+            "BATTERY_STORAGE"
         ],
         "projectType": "native",
         "resources": {
@@ -44,7 +58,8 @@
         "sdkVersion": "3",
         "targetPlatforms": [
             "aplite",
-            "basalt"
+            "basalt",
+            "diorite"
         ],
         "uuid": "17ccebf5-cf30-4d1e-8a66-fc57a387a738",
         "watchapp": {

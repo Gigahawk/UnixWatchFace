@@ -1,5 +1,6 @@
 #include "clock.h"
 #include "weather.h"
+#include "settings.h"
 
 // Used layers
 TextLayer* m_time_layer;
@@ -30,10 +31,23 @@ static void update_time()
 
 static void tick_handler(struct tm *tick_time, TimeUnits units_changed) 
 {
+#ifdef DEBUG_CLOCK
+  bool check = quiet_hours_enabled;
+#endif
+  if(m_settings.s_quiet_hours && tick_time->tm_hour >= m_settings.s_quiet_hours_start_h && tick_time->tm_min >= m_settings.s_quiet_hours_start_m){
+    quiet_hours_enabled = true;
+  } else {
+    quiet_hours_enabled = false;
+  }
+#ifdef DEBUG_CLOCK
+  if(check != quiet_hours_enabled)
+    printf("clock_c: Quiet time is now %d", quiet_hours_enabled);
+#endif
+  
   update_time();
   
   // Also get weather update every 60 minutes
-  if(!(tick_time->tm_min % 60)) {
+  if(!(tick_time->tm_min % m_settings.s_weather_update_interval)) {
     weather_request();
   }
 }

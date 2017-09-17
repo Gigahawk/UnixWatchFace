@@ -1,9 +1,19 @@
 #include "bluetooth.h"
-#include "weather.h"
 
 #define VIBRATE_CYCLE 10
 
 TextLayer *m_bluetooth_layer;
+
+#ifdef DEBUG_BLUETOOTH
+const char* sniffIntervalToString(const SniffInterval interval){
+  switch (interval) 
+   {
+      case SNIFF_INTERVAL_NORMAL: return "SNIFF_INTERVAL_NORMAL";
+      case SNIFF_INTERVAL_REDUCED: return "SNIFF_INTERVAL_REDUCED";
+      default: return "NULL";
+   }
+}
+#endif
 
 //Update the bluetooth layer and all changes that need to be made
 void update_bluetooth()
@@ -46,8 +56,6 @@ static void bt_handle(bool connected)
     printf("bluetooth_c: Connected!");
 #endif
     
-    //Update weather
-    weather_request();
   } else {
       #ifdef DEBUG_BLUETOOTH
          printf("bluetooth_c: Disconnected!");
@@ -64,6 +72,7 @@ void bluetooth_init()
   // Debug printout
 #ifdef DEBUG_BLUETOOTH
   printf("bluetooth_c: Initializing");
+  printf("bluetooth_c: Current sniff interval is %s", sniffIntervalToString(app_comm_get_sniff_interval()));
 #endif
   
   // Init vars

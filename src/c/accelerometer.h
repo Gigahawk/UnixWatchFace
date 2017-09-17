@@ -4,8 +4,10 @@
 //#include "weather.h"
 
 #ifdef DEBUG_ENABLED
-   #define DEBUG_ACCELERATION
+   #define DEBUG_ACCELEROMETER
 #endif
+
+uint8_t shake_counter;
 
 // Functions used in other files
 void accelerometer_init(void);

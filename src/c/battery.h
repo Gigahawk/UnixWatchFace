@@ -2,19 +2,20 @@
 #define BATTERY_H
 
 #include <pebble.h>
+#include "debug.h"
 
 #ifdef DEBUG_ENABLED
    #define DEBUG_BATTERY
 #endif
 
 // Battery struct
-struct battery_struct
+typedef struct
 {
-  uint8_t id;
-  uint8_t level;
+  int id;
+  int level;
   bool is_charging;
   char text[16];
-};
+}battery_struct;
 
 
 

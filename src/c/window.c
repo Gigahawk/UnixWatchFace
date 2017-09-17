@@ -28,6 +28,7 @@ void setup_text_layer(TextLayer* target_layer,GColor background_color, GColor te
 
 static void initialise_ui(void)
 {
+  is_flashlight = false;
 #ifdef DEBUG_MAINWINDOW
   printf("window_c: Creating window");
 #endif
@@ -150,6 +151,22 @@ void refresh_display(void)
   }
     
   layer_mark_dirty(window_get_root_layer(s_window));
+}
+
+void toggle_flashlight(void){
+  vibes_cancel();
+
+  if (is_flashlight) {
+    window_set_background_color(s_window, GColorBlack);
+    light_enable(false);
+    is_flashlight = false;
+  } else {
+    window_set_background_color(s_window, GColorWhite);
+    light_enable(true);
+    is_flashlight = true;
+  }
+  
+  vibes_long_pulse();
 }
 
 TextLayer* get_time_layer(){ return s_time_layer; }

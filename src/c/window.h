@@ -2,22 +2,27 @@
 #define WINDOW_H
 
 #include <pebble.h>
+#include "debug.h"
+
 //#include "configuration.h"
 #include "battery.h"
 
-//#define DEBUG_ENABLED
 
 #ifdef DEBUG_ENABLED
    #define DEBUG_MAINWINDOW
 #endif
 
 #ifdef DEBUG_ENABLED
-   //#define DEBUG_IMAGEREDRAW
+   #define DEBUG_IMAGEREDRAW
 #endif
+
+bool is_flashlight;
 
 // Functions used in other files
 void show_mainwindow(void);
 void hide_mainwindow(void);
+
+void toggle_flashlight(void);
 
 void refresh_display(void);
 

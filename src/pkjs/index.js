@@ -1,4 +1,13 @@
-var com_debug = false;
+// Import the Clay package
+var Clay = require('pebble-clay');
+// Load our Clay configuration file
+var clayConfig = require('./config');
+// Initialize Clay
+var clay = new Clay(clayConfig);
+
+
+
+var com_debug = true;
 var com_initialized = false;
 var battery = require('./battery');
 var weather = require('./weather');
@@ -54,6 +63,27 @@ function com_init(debug){
       console.log("Com: I - Recieved AppMessage");
     }
     if(com_initialized){
+      if ('weather_provider' in e.payload){
+        weather.setProvider(e.payload['weather_provider']);
+        
+        if(debug){
+          console.log("Com: I - Weather provider change requested");
+          console.log("Com: I - New weather provider is " + weather.getProvider());
+        }
+        
+        
+        // Update weather after provider change
+        weather.getWeather();
+        
+      }
+      if ('weather_units' in e.payload){
+        weather.setUnits(e.payload['weather_units']);
+        
+        if(debug){
+          console.log("Com: I - Weather units change requested");
+          console.log("Com: I - New units are " + weather.getUnits());
+        }
+      }
       if ('WEATHER_TEMPERATURE' in e.payload){
         if(debug)
           console.log("Com: I - Weather info requested");
