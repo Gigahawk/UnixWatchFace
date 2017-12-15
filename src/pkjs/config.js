@@ -21,7 +21,7 @@ module.exports = [
             "value": "yahoo" 
           },
           { 
-            "label": "DarkSky", 
+            "label": "Dark Sky", 
             "value": "darksky" 
           }
         ]
@@ -59,6 +59,23 @@ module.exports = [
         "label": "Show Weather Update Fail",
         "defaultValue": true,
         "description": "Every time a weather update fails the color of the weather text will turn red"
+      },
+      {
+        "type": "slider",
+        "messageKey": "weather_retries",
+        "defaultValue": 3,
+        "label": "Retries",
+        "description": "Number of times to retry a failed weather fetch",
+        "min": 0,
+        "max": 10,
+        "step": 1
+      },
+      {
+        "type": "input",
+        "messageKey": "weather_fallback",
+        "label": "Fallback Location",
+        "defaultValue": "",
+        "description": "Location to use in case GPS can't find your location."
       }
     ]
   },
@@ -101,6 +118,41 @@ module.exports = [
         "defaultValue": [true, true, false, false],
         "options": ["Weather", "Phone Battery", "Watch Battery", "Time"],
         "description": "Note: If time is disabled it will only update when the watch is shaken (uses accelerometer, may actually be detrimental to battery life)"
+      }
+    ]
+  },
+  {
+    "type": "section",
+    "items": [
+      {
+        "type": "heading",
+        "defaultValue": "API Keys"
+      },
+      {
+        "type": "input",
+        "messageKey": "darksky_api_key",
+        "label": "Dark Sky API",
+        "description": 'Required to use Dark Sky as a weather provider, get a key <a href="https://darksky.net/dev/register">here</a>'
+      },
+      {
+        "type": "input",
+        "messageKey": "google_api_key",
+        "label": "Google Maps API",
+        "description": 'Required for the fallback location to work, get a key <a href="https://developers.google.com/maps/documentation/geocoding/start#get-a-key">here</a>'
+      }
+    ]
+  },
+  {
+    "type": "section",
+    "items": [
+      {
+        "type": "heading",
+        "defaultValue": "Debug"
+      },
+      {
+        "type": "text",
+        "id": "debug_output",
+        "defaultValue": ""
       }
     ]
   },

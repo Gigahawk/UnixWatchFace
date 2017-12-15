@@ -34,6 +34,13 @@ void update_battery(battery_struct *Battery, TextLayer *batnum)
 #endif
 }
 
+void disable_phone_battery(){
+#ifdef DEBUG_BATTERY
+  printf("battery_c: Disablling phone battery text");
+#endif
+  text_layer_set_text(m_phonebattery_layer,"");
+}
+
 // New battery data from the pebble is processed here
 static void battery_handle_pebble(BatteryChargeState charge_state) 
 {   

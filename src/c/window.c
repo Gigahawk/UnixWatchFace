@@ -16,6 +16,8 @@ static TextLayer *s_weather_layer;
 static TextLayer *s_command4_layer;
 static TextLayer *s_bluetooth_layer;
 
+static TextLayer *s_sleep_layer;
+
 void setup_text_layer(TextLayer* target_layer,GColor background_color, GColor text_color, char* text, GTextAlignment alignment,  GFont font)
 {
   text_layer_set_background_color(target_layer, background_color);
@@ -56,6 +58,10 @@ static void initialise_ui(void)
   s_command4_layer = text_layer_create(GRect(0, 88, 144, 22));
   s_bluetooth_layer = text_layer_create(GRect(0, 110, 144, 22));
   
+  // Temporary health debug layers
+  s_sleep_layer = text_layer_create(GRect(0, 145, 144, 22));
+  
+  
 #ifdef DEBUG_MAINWINDOW
   printf("window_c: Setting up layers");
 #endif
@@ -65,10 +71,12 @@ static void initialise_ui(void)
   setup_text_layer(s_command2_layer,GColorClear,GColorWhite,"root@pebble:~# upower -i",GTextAlignmentLeft,s_command_font);
   setup_text_layer(s_watchbattery_layer,GColorClear,GColorWhite,"Bat0: --",GTextAlignmentLeft,s_battery_font);
   setup_text_layer(s_phonebattery_layer,GColorClear,GColorWhite,"Bat1: --",GTextAlignmentLeft,s_battery_font);
-  setup_text_layer(s_command3_layer,GColorClear,GColorWhite,"root@pebble:~# ./weather.sh",GTextAlignmentLeft,s_command_font);
+  setup_text_layer(s_command3_layer,GColorClear,GColorWhite,"root@pebble:~# ./weather.sh --gps",GTextAlignmentLeft,s_command_font);
   setup_text_layer(s_weather_layer,GColorClear,GColorWhite," ",GTextAlignmentLeft,s_time_font);
   setup_text_layer(s_command4_layer,GColorClear,GColorWhite,"root@pebble:~# adb devices",GTextAlignmentLeft,s_command_font);
   setup_text_layer(s_bluetooth_layer,GColorClear,GColorWhite,"",GTextAlignmentLeft,s_command_font);
+  
+  setup_text_layer(s_sleep_layer,GColorClear,GColorWhite,"0",GTextAlignmentLeft,s_command_font);
   
 #ifdef DEBUG_MAINWINDOW
   printf("[MAIN][initialise_ui] Add layers");
@@ -84,6 +92,8 @@ static void initialise_ui(void)
   layer_add_child(window_get_root_layer(s_window), text_layer_get_layer(s_weather_layer));
   layer_add_child(window_get_root_layer(s_window), text_layer_get_layer(s_command4_layer));
   layer_add_child(window_get_root_layer(s_window), text_layer_get_layer(s_bluetooth_layer));
+  
+  layer_add_child(window_get_root_layer(s_window), text_layer_get_layer(s_sleep_layer));
 
 #ifdef DEBUG_MAINWINDOW
   printf("[MAIN][initialise_ui] Finished creating");
@@ -172,5 +182,8 @@ void toggle_flashlight(void){
 TextLayer* get_time_layer(){ return s_time_layer; }
 TextLayer* get_watchbattery_layer(){ return s_watchbattery_layer; }
 TextLayer* get_phonebattery_layer(){ return s_phonebattery_layer; }
+TextLayer* get_weather_command_layer() { return s_command3_layer; }
 TextLayer* get_weather_layer(){ return s_weather_layer; }
 TextLayer* get_bluetooth_layer(){ return s_bluetooth_layer; }
+
+TextLayer* get_sleep_layer(){ return s_sleep_layer; }

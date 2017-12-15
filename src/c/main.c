@@ -11,6 +11,10 @@
 //#include "accelerometer.h"
 #include "communication.h"
 
+#ifdef PBL_HEALTH
+#include "health.h"
+#endif
+
 static void init() {  
   settings_init();
   
@@ -25,6 +29,10 @@ static void init() {
   bluetooth_init();
   
   weather_init();
+  
+  #ifdef PBL_HEALTH
+  Health_init();
+  #endif
   
   //accelerometer_init();
  
@@ -44,6 +52,11 @@ static void deinit() {
   communication_deinit();
   
   hide_mainwindow();
+  
+  #ifdef PBL_HEALTH
+  Health_deinit();
+  #endif
+  
 }
 
 int main(void) {

@@ -8,13 +8,12 @@
     "pebble": {
         "capabilities": [
             "location",
-            "configurable"
+            "configurable",
+            "health"
         ],
         "displayName": "UnixWatchface",
         "enableMultiJS": true,
         "messageKeys": [
-            "WEATHER_TEMPERATURE",
-            "WEATHER_CONDITIONS",
             "PHONE_BATTERY",
             "PHONE_CHARGING",
             "READY",
@@ -30,7 +29,15 @@
             "quiet_hours_disabled_features[4]",
             "quiet_hours",
             "SETTINGS_STORAGE",
-            "BATTERY_STORAGE"
+            "BATTERY_STORAGE",
+            "weather_fallback",
+            "WEATHER",
+            "WEATHER_FAILED",
+            "PHONE_BATTERY_EXISTS",
+            "weather_retries",
+            "WEATHER_GPS",
+            "darksky_api_key",
+            "google_api_key"
         ],
         "projectType": "native",
         "resources": {

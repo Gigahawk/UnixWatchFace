@@ -23,4 +23,5 @@ typedef struct
 void battery_init();
 void battery_deinit();
 void battery_handle_phone(int level,bool is_charging);
+void disable_phone_battery();
 #endif

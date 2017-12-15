@@ -8,7 +8,6 @@
    #define DEBUG_COMMUNICATION
 #endif
 
-#define DEBUG_COMMUNICATION
 // Functions used in other files 
 
 bool is_com_active;

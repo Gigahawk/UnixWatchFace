@@ -30,6 +30,9 @@ void refresh_display(void);
 TextLayer* get_time_layer();
 TextLayer* get_watchbattery_layer();
 TextLayer* get_phonebattery_layer();
+TextLayer* get_weather_command_layer();
 TextLayer* get_weather_layer();
 TextLayer* get_bluetooth_layer();
+
+TextLayer* get_sleep_layer();
 #endif //WINDOW_H

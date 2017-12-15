@@ -7,7 +7,7 @@
 
 // Used layers
 TextLayer* m_weather_layer;
-char m_weather_layer_buffer[32];
+TextLayer* m_weather_command_layer;
 
 // Storage for weather data
 weather_struct temp_storage;
@@ -27,13 +27,13 @@ void update_weather()
 #ifdef DEBUG_WEATHER
   printf("weather_c: Updating text");
 #endif
-  
-  //Update the text buffer
-  snprintf(m_weather_layer_buffer, sizeof(m_weather_layer_buffer), "%d%c, %s", temp_storage.temp, m_settings.s_weather_unit[0]=='s'? 'C':'F', temp_storage.conditions);
-  
+ 
   //Set the text
-  text_layer_set_text(m_weather_layer, m_weather_layer_buffer);
-  
+  if(temp_storage.gps)
+    text_layer_set_text(m_weather_command_layer, "root@pebble:~# ./weather.sh --gps");
+  else
+    text_layer_set_text(m_weather_command_layer, "root@pebble:~# ./weather.sh");
+  text_layer_set_text(m_weather_layer, temp_storage.weather);
   
   //Update screen to make textlayers move
   refresh_display();
@@ -50,57 +50,22 @@ void update_color()
 }
 
 // New weather information will be processed here
-void weather_handle(Tuple *weather_temperature,Tuple *weather_conditions)
+void weather_handle(Tuple *weather_t, Tuple *weather_gps_t)
 {
   // Debug printout
 #ifdef DEBUG_WEATHER
-  printf("weather_c: Recieved weather data");
+  printf("weather_c: Recieved weather data, gps: %d",weather_gps_t->value->uint8);
 #endif
-  
-  //Recieved weather so no longer waiting
-  is_weather_waiting = false;
-  
-  //Reset number of retries
-  weather_retries = 0;
   
   weather_reset_color();
   
-  temp_storage.temp = (int)weather_temperature->value->int32;
-
-  snprintf(temp_storage.conditions, sizeof(temp_storage.conditions), "%s", weather_conditions->value->cstring);  
+  
+  temp_storage.gps = (bool)weather_gps_t->value->uint8;
+  
+  snprintf(temp_storage.weather, sizeof(temp_storage.weather), "%s", weather_t->value->cstring);  
 
   // Redraw the text
   update_weather();  
-}
-
-void weather_timer_callback()
-{
-#ifdef DEBUG_WEATHER
-  printf("weather_c: Checking if weather was recieved");
-#endif
-    
-  if(is_weather_waiting) {
-#ifdef DEBUG_WEATHER
-    printf("weather_c: Didn't get weather from phone");
-#endif
-    if(weather_retries < RETRY_COUNT){
-#ifdef DEBUG_WEATHER
-      printf("weather_c: Retrying...");
-#endif
-      weather_retries++;
-      weather_request();
-    } else {
-#ifdef DEBUG_WEATHER
-      printf("weather_c: Too many retrys, do you have an internet connection?");
-#endif
-      weather_retries = 0;
-      weather_iterate_color();
-    }
-  } else {
-#ifdef DEBUG_WEATHER
-    printf("weather_c: Weather was recieved");
-#endif
-  }
 }
 
 void weather_save(){
@@ -152,18 +117,12 @@ void weather_request()
     printf("weather_c: No connection detected, skipping weather check");
 #endif
     weather_iterate_color();
-    is_weather_waiting = false;
     return;
   }
   
-  is_weather_waiting = true;
-  
   // Send Request
-  communication_send(MESSAGE_KEY_WEATHER_TEMPERATURE);
-  communication_send(MESSAGE_KEY_WEATHER_CONDITIONS);
+  communication_send(MESSAGE_KEY_WEATHER);
   communication_send(MESSAGE_KEY_END);
-  
-  app_timer_register(20000, weather_timer_callback, NULL);
 }
 
 //Init all the variables
@@ -179,9 +138,7 @@ void weather_init()
 
   // Init the vars 
   m_weather_layer = get_weather_layer();
-  is_weather_waiting = false;
-  weather_retries = 0;
-
+  m_weather_command_layer = get_weather_command_layer();
   weather_load();
 }
 

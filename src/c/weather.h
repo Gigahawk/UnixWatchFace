@@ -15,19 +15,13 @@
 // Weather struct
 typedef struct 
 {
-  int temp;
-  char conditions[32];
+  bool gps;
+  char weather[32];
   short color;
 } weather_struct;
 
-
-bool is_weather_waiting;
-AppTimer* weather_timer;
-
-int weather_retries;
-
 // Functions used in other files
-void weather_handle(Tuple *weather_temperature,Tuple *weather_conditions);
+void weather_handle(Tuple *weather_t, Tuple *weather_gps_t);
 
 void weather_init();
 void weather_deinit();

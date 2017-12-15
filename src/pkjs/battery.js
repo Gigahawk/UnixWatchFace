@@ -12,7 +12,6 @@ function push_failure(){
     console.log("Battery: E - Push failure");
 }
 
-
 function push(){
   if(batt_debug)
     console.log("Battery: I - Pushing battery state to watch");
@@ -31,6 +30,13 @@ function push(){
   Pebble.sendAppMessage(dictionary,push_success, push_failure);    
 }
 
+function setBatteryExists(exists){
+  var dictionary = 
+      {
+        'PHONE_BATTERY_EXISTS': exists
+      };
+  Pebble.sendAppMessage(dictionary, push_success, push_failure);
+}
 
 function init_success(batteryManager)
 {
@@ -45,7 +51,7 @@ function init_success(batteryManager)
 
 function init_failure(){
   if(batt_debug)
-    console.log("Battery: E - Could not initialize battery modules");
+    console.log("Battery: E - Could not initialize battery module");
 }
 
 function init(debug){
@@ -62,12 +68,13 @@ function init(debug){
       battery.addEventListener('levelchange', function(){
         push();
       });
+      setBatteryExists(true);
     });
-    
     navigator.getBattery().then(init_success, init_failure);
   } else {
     if(batt_debug)
       console.log("Battery: E - Phone does not support Battery API");
+    setBatteryExists(false);
   }  
 }
 

@@ -41,7 +41,6 @@ void settings_init()
   printf("settings_c: Initializing");
 #endif
   settings_load();
-  
 }
 
 

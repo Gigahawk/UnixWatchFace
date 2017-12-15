@@ -6,8 +6,8 @@
 
 // Individual debug switches
 //#define DEBUG_BATTERY
-#define DEBUG_COMMUNICATION
-#define DEBUG_SETTINGS
+// #define DEBUG_COMMUNICATION
+// #define DEBUG_SETTINGS
 #define DEBUG_WEATHER
 //#define DEBUG_CLOCK
 

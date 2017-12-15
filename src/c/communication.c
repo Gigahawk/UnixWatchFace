@@ -41,8 +41,6 @@ const char* messageKeyToString(uint32_t key){
 static void inbox_received_callback(DictionaryIterator *iterator, void *context)
 {
   // Get settings from dictionary
-  Tuple *weather_provider_t = dict_find(iterator, MESSAGE_KEY_weather_provider);
-  Tuple *weather_units_t = dict_find(iterator, MESSAGE_KEY_weather_units);
   Tuple *weather_interval_t = dict_find(iterator, MESSAGE_KEY_weather_interval);
   Tuple *weather_fail_indicator_t = dict_find(iterator, MESSAGE_KEY_weather_fail_indicator);
   Tuple *quiet_hours_t = dict_find(iterator, MESSAGE_KEY_quiet_hours);
@@ -51,26 +49,15 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
   Tuple *quiet_hours_disabled_features_t = dict_find(iterator, MESSAGE_KEY_quiet_hours_disabled_features);
 
   // Get data from dictionary
-  Tuple *weather_temperature_t = dict_find(iterator, MESSAGE_KEY_WEATHER_TEMPERATURE);
-  Tuple *weather_conditions_t = dict_find(iterator, MESSAGE_KEY_WEATHER_CONDITIONS);
+  Tuple *weather_t = dict_find(iterator, MESSAGE_KEY_WEATHER);
+  Tuple *weather_failed_t = dict_find(iterator, MESSAGE_KEY_WEATHER_FAILED);
+  Tuple *weather_gps_t = dict_find(iterator, MESSAGE_KEY_WEATHER_GPS);
   
+  Tuple *battery_exists_t = dict_find(iterator, MESSAGE_KEY_PHONE_BATTERY_EXISTS);
   Tuple *battery_level_t = dict_find(iterator, MESSAGE_KEY_PHONE_BATTERY);
   Tuple *battery_charging_t = dict_find(iterator, MESSAGE_KEY_PHONE_CHARGING);
   
   Tuple *com_ready_t = dict_find(iterator, MESSAGE_KEY_READY);
-  
-  if (weather_provider_t && weather_units_t) {
-#ifdef DEBUG_COMMUNICATION
-    printf("communication_c: Weather Provider Setting recieved: %s", weather_provider_t->value->cstring);
-    printf("communication_c: Weather Units Setting recieved: %s", weather_units_t->value->cstring);
-#endif
-    setString(o_weather_provider, weather_provider_t->value->cstring);
-    setString(o_weather_unit, weather_units_t->value->cstring);
-    setNum(o_weather_unit, weather_units_t->value->cstring[0]=='s'? 'C':'F');
-    // Send data back to phone to update pebblekitJS
-    update_weather_settings(weather_provider_t->value->cstring, weather_units_t->value->cstring);
-    weather_request();
-  }
   
   if (weather_interval_t){
     int weather_interval = (int)weather_interval_t->value->int32;
@@ -105,27 +92,34 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
     setTime(o_quiet_hours_end, quiet_hours_end_t->value->cstring);
   }
   
-  if (quiet_hours_disabled_features_t){
-    bool settings[QUIET_HOURS_NUM_SETTINGS];
+//   if (quiet_hours_disabled_features_t){
+//     bool settings[QUIET_HOURS_NUM_SETTINGS];
     
-    for(int i = 0; i < QUIET_HOURS_NUM_SETTINGS; i++){
-      quiet_hours_disabled_features_t = dict_find(iterator, MESSAGE_KEY_quiet_hours_disabled_features + i);
-      settings[i] = (bool)quiet_hours_disabled_features_t->value->uint8;
-    }
+//     for(int i = 0; i < QUIET_HOURS_NUM_SETTINGS; i++){
+//       quiet_hours_disabled_features_t = dict_find(iterator, MESSAGE_KEY_quiet_hours_disabled_features + i);
+//       settings[i] = (bool)quiet_hours_disabled_features_t->value->uint8;
+//     }
     
-#ifdef DEBUG_COMMUNICATION
-    printf("communication_c: Quiet Hours disabled features recieved: [0]%d, [1]%d, [2]%d, [3]%d",(int)settings[0],(int)settings[1],(int)settings[2],(int)settings[3]);
-#endif
-  }
+// #ifdef DEBUG_COMMUNICATION
+//     printf("communication_c: Quiet Hours disabled features recieved: [0]%d, [1]%d, [2]%d, [3]%d",(int)settings[0],(int)settings[1],(int)settings[2],(int)settings[3]);
+// #endif
+//   }
   
-  if (weather_temperature_t && weather_conditions_t) {
+  if (weather_t && weather_gps_t) {
 #ifdef DEBUG_COMMUNICATION
     printf("communication_c: Weather info recieved");
 #endif
     
-    weather_handle(weather_temperature_t, weather_conditions_t);
+    weather_handle(weather_t, weather_gps_t);
+  }
+  if (weather_failed_t){
+    weather_iterate_color();
   }
   
+  if(battery_exists_t) {
+    
+  }
+
   if (battery_level_t) {
 #ifdef DEBUG_COMMUNICATION
     printf("communication_c: Battery info recieved");
