@@ -43,9 +43,6 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
   // Get settings from dictionary
   Tuple *weather_interval_t = dict_find(iterator, MESSAGE_KEY_weather_interval);
   Tuple *weather_fail_indicator_t = dict_find(iterator, MESSAGE_KEY_weather_fail_indicator);
-  Tuple *quiet_hours_t = dict_find(iterator, MESSAGE_KEY_quiet_hours);
-  Tuple *quiet_hours_start_t = dict_find(iterator, MESSAGE_KEY_quiet_hours_start);
-  Tuple *quiet_hours_end_t = dict_find(iterator, MESSAGE_KEY_quiet_hours_end);
   Tuple *quiet_hours_disabled_features_t = dict_find(iterator, MESSAGE_KEY_quiet_hours_disabled_features);
 
   // Get data from dictionary
@@ -75,24 +72,7 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
     setNum(o_weather_update_fail_indicator, enable);
   }
   
-  if (quiet_hours_t){
-    bool enable = quiet_hours_t->value->int32;
-#ifdef DEBUG_COMMUNICATION
-    printf("communication_c: Quiet Hours setting recieved: %d", enable);
-#endif
-    setNum(o_quiet_hours, enable);
-  }
-  
-  if (quiet_hours_start_t && quiet_hours_end_t){
-#ifdef DEBUG_COMMUNICATION
-    printf("communication_c: Quiet hours start recieved: %s", quiet_hours_start_t->value->cstring);
-    printf("communication_c: Quiet hours end recieved: %s", quiet_hours_end_t->value->cstring);
-#endif
-    setTime(o_quiet_hours_start, quiet_hours_start_t->value->cstring);
-    setTime(o_quiet_hours_end, quiet_hours_end_t->value->cstring);
-  }
-  
-//   if (quiet_hours_disabled_features_t){
+  if (quiet_hours_disabled_features_t){
 //     bool settings[QUIET_HOURS_NUM_SETTINGS];
     
 //     for(int i = 0; i < QUIET_HOURS_NUM_SETTINGS; i++){
@@ -101,9 +81,12 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
 //     }
     
 // #ifdef DEBUG_COMMUNICATION
-//     printf("communication_c: Quiet Hours disabled features recieved: [0]%d, [1]%d, [2]%d, [3]%d",(int)settings[0],(int)settings[1],(int)settings[2],(int)settings[3]);
+//     printf("communication_c: Quiet Hours disabled features recieved: [0]%d, [1]%d, [2]%d",(int)settings[0],(int)settings[1],(int)settings[2]);
 // #endif
-//   }
+    
+    //setArray(o_quiet_hours_disabled_features, &settings, QUIET_HOURS_NUM_SETTINGS);
+    
+  }
   
   if (weather_t && weather_gps_t) {
 #ifdef DEBUG_COMMUNICATION

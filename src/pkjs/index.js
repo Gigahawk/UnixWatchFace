@@ -3,13 +3,13 @@ var weather = require('./weather');
 var Clay = require('pebble-clay');
 var messageKeys = require('message_keys');
 var clayConfig = require('./config');
-// var customClay = require('./custom-clay');
+var customClay = require('./custom-clay');
 
 var com_debug = true;
 var clay_debug = true;
 var com_initialized = false;
 
-var clay = new Clay(clayConfig, null, { autoHandleEvents: false });
+var clay = new Clay(clayConfig, customClay, { autoHandleEvents: false });
 
 // Listen for when the watchface is opened
 Pebble.addEventListener('ready', 

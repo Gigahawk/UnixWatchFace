@@ -76,6 +76,11 @@ module.exports = [
         "label": "Fallback Location",
         "defaultValue": "",
         "description": "Location to use in case GPS can't find your location."
+      },
+      {
+        "type": "text",
+        "id": "weather_fallback_output",
+        "defaultValue": ""
       }
     ]
   },
@@ -84,40 +89,15 @@ module.exports = [
     "items": [
       {
         "type": "heading",
-        "defaultValue": "Communication"
-      },
-      {
-        "type": "toggle",
-        "messageKey": "quiet_hours",
-        "label": "Quiet Hours",
-        "defaultValue": true,
-        "description": "During quiet hours certain features can be disabled to reduce battery consumption"
-      },
-      {
-        "type": "input",
-        "messageKey": "quiet_hours_start",
-        "label": "Quiet Hours Start",
-        "defaultValue": "11:59 PM",
-        "attributes": {
-          "type": "time"
-        }
-      },
-      {
-        "type": "input",
-        "messageKey": "quiet_hours_end",
-        "label": "Quiet Hours End",
-        "defaultValue": "8:00 AM",
-        "attributes": {
-          "type": "time"
-        }
+        "defaultValue": "Quiet Time"
       },
       {
         "type": "checkboxgroup",
         "messageKey": "quiet_hours_disabled_features",
         "label": "Disabled Features",
-        "defaultValue": [true, true, false, false],
-        "options": ["Weather", "Phone Battery", "Watch Battery", "Time"],
-        "description": "Note: If time is disabled it will only update when the watch is shaken (uses accelerometer, may actually be detrimental to battery life)"
+        "defaultValue": [true, true, false],
+        "options": ["Weather", "Phone Battery", "Watch Battery"],
+        "description": "Functions to disable when quiet time is enabled"
       }
     ]
   },
@@ -144,9 +124,11 @@ module.exports = [
   },
   {
     "type": "section",
+    "hidden": true,
     "items": [
       {
         "type": "heading",
+        "id": "debug_header",
         "defaultValue": "Debug"
       },
       {

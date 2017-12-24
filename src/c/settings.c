@@ -25,11 +25,6 @@ void settings_print(){
   printf("Weather Unit: %s", m_settings.s_weather_unit);
   printf("Weather Update Interval: %d", m_settings.s_weather_update_interval);
   printf("Weather Update Fail Indicator: %d", (int)m_settings.s_weather_update_fail_indicator);
-  printf("Quiet Hours Enabled: %d", (int)m_settings.s_quiet_hours);
-  printf("Quiet Hours Start Hour: %d", m_settings.s_quiet_hours_start_h);
-  printf("Quiet Hours Start Minute: %d", m_settings.s_quiet_hours_start_m);
-  printf("Quiet Hours End Hour: %d", m_settings.s_quiet_hours_end_h);
-  printf("Quiet Hours End Minute: %d", m_settings.s_quiet_hours_end_m);
 }
 #endif
 
@@ -43,7 +38,6 @@ void settings_init()
   settings_load();
 }
 
-
 void setNum(settings_option option, int value){
   switch(option){
     case o_weather_update_interval:
@@ -51,21 +45,6 @@ void setNum(settings_option option, int value){
       break;
     case o_weather_update_fail_indicator:
       m_settings.s_weather_update_fail_indicator = value;
-      break;
-    case o_quiet_hours:
-      m_settings.s_quiet_hours = value;
-      break;
-    case o_quiet_hours_start_h:
-      m_settings.s_quiet_hours_start_h = value;
-      break;
-    case o_quiet_hours_start_m:
-      m_settings.s_quiet_hours_start_m = value;
-      break;
-    case o_quiet_hours_end_h:
-      m_settings.s_quiet_hours_end_h = value;
-      break;
-    case o_quiet_hours_end_m:
-      m_settings.s_quiet_hours_end_m = value;
       break;
     default:
 #ifdef DEBUG_SETTINGS
@@ -93,22 +72,17 @@ void setString(settings_option option, char* value){
   }
 }
 
-void setTime(settings_option option, char* value){
-  int hour = (value[0]-48)*10 + (value[1]-48);
-  int minute = (value[3]-48)*10 + (value[4]-48);
-#ifdef DEBUG_SETTINGS
-  printf("settings_c: Setting time to %d:%d", hour, minute);
-#endif 
+void setArray(settings_option option, int* values, int size){
   switch(option){
-    case o_quiet_hours_start:
-      setNum(o_quiet_hours_start_h,hour);
-      setNum(o_quiet_hours_start_m,minute);
-      break;
-    case o_quiet_hours_end:
-      setNum(o_quiet_hours_end_h,hour);
-      setNum(o_quiet_hours_end_m,minute);
+    case o_quiet_hours_disabled_features:
+      for(int i = 0; i < size; i++){
+        m_settings.s_quiet_hours_disabled_features[i] = values[i];
+      }
       break;
     default:
+#ifdef DEBUG_SETTINGS
+      printf("settings_c: Warning: setArray: unknown or noninteger input");
+#endif
       break;
   }
 }
